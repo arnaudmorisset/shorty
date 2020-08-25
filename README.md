@@ -1,0 +1,3 @@
+# Shorty
+
+**TODO: Write documentation**
