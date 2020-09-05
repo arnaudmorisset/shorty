@@ -17,7 +17,11 @@ defmodule Shorty.Controllers.Domain do
   end
 
   defp to_outside(domain) do
-    %{short_tag: domain.short_tag}
+    %{
+      original_url: domain.url,
+      short_tag: domain.short_tag,
+      shorten_url: "http://localhost:8080/#{domain.short_tag}"
+    }
     |> Jason.encode()
   end
 
