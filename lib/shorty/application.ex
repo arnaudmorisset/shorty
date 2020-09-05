@@ -6,7 +6,10 @@ defmodule Shorty.Application do
   def start(_type, _args) do
     children = [
       Shorty.Repo,
-      {Plug.Cowboy, scheme: :http, plug: Shorty.Router, options: [port: 8080]}
+      {Plug.Cowboy,
+       scheme: :http,
+       plug: Shorty.Router,
+       options: [port: Application.get_env(:shorty, :cowboy_port, 8080)]}
     ]
 
     opts = [strategy: :one_for_one, name: Shorty.Supervisor]

@@ -7,3 +7,5 @@ config :shorty, Shorty.Repo,
   hostname: "localhost"
 
 config :shorty, ecto_repos: [Shorty.Repo]
+
+config :shorty, cowboy_port: 8080
