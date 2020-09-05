@@ -20,7 +20,7 @@ defmodule Shorty.Controllers.Domain do
     %{
       original_url: domain.url,
       short_tag: domain.short_tag,
-      shorten_url: "http://localhost:8080/#{domain.short_tag}"
+      shorten_url: build_shorten_url(domain.short_tag)
     }
     |> Jason.encode()
   end
@@ -30,5 +30,13 @@ defmodule Shorty.Controllers.Domain do
     |> :crypto.strong_rand_bytes()
     |> Base.url_encode64()
     |> binary_part(0, 16)
+  end
+
+  defp build_shorten_url(short_tag) do
+    scheme = Application.get_env(:shorty, :scheme, "https")
+    domain_name = Application.get_env(:shorty, :domain_name, "localhost")
+    cowboy_port = Application.get_env(:shorty, :cowboy_port, 8080)
+
+    "#{scheme}://#{domain_name}:#{cowboy_port}/#{short_tag}"
   end
 end
