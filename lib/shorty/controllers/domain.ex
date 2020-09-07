@@ -1,23 +1,17 @@
 defmodule Shorty.Controllers.Domain do
-  import Plug.Conn
+  import Shorty.Controller
 
   def create(conn, params) do
-    with {:ok, domain} <- create_domain(params),
-         {:ok, json} <- to_outside(domain) do
-      conn
-      |> put_resp_content_type("application/json")
-      |> send_resp(200, json)
-    else
+    case create_domain(params) do
+      {:ok, domain} ->
+        respond(conn, 200, %{
+          original_url: domain.url,
+          short_tag: domain.short_tag,
+          shorten_url: build_shorten_url(domain.short_tag)
+        })
+
       {:error, %Ecto.Changeset{errors: [url: {"can't be blank", [validation: :required]}]}} ->
-        conn
-        |> put_resp_content_type("application/json")
-        |> send_resp(
-          400,
-          Jason.encode!(%{
-            error: "invalid_request",
-            message: "The URL is missing"
-          })
-        )
+        respond(conn, 400, %{error: "invalid_request", message: "The URL is missing"})
     end
   end
 
@@ -25,15 +19,6 @@ defmodule Shorty.Controllers.Domain do
     %{url: params["url"], short_tag: generate_short_tag()}
     |> Shorty.Models.Domain.changeset_creation()
     |> Shorty.Commands.Domain.create()
-  end
-
-  defp to_outside(domain) do
-    %{
-      original_url: domain.url,
-      short_tag: domain.short_tag,
-      shorten_url: build_shorten_url(domain.short_tag)
-    }
-    |> Jason.encode()
   end
 
   defp generate_short_tag do
