@@ -7,6 +7,17 @@ defmodule Shorty.Controllers.Domain do
       conn
       |> put_resp_content_type("application/json")
       |> send_resp(200, json)
+    else
+      {:error, %Ecto.Changeset{errors: [url: {"can't be blank", [validation: :required]}]}} ->
+        conn
+        |> put_resp_content_type("application/json")
+        |> send_resp(
+          400,
+          Jason.encode!(%{
+            error: "invalid_request",
+            message: "The URL is missing"
+          })
+        )
     end
   end
 
