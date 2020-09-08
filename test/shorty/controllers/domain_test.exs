@@ -35,11 +35,28 @@ defmodule Shorty.Controllers.DomainTest do
       |> put_req_header("content-type", @mimetype)
       |> Shorty.Router.call(@options)
 
-    assert conn.status == 400
+    assert conn.status == 422
 
     assert {:ok, body} = Jason.decode(conn.resp_body)
 
-    assert body["error"] == "invalid_request"
+    assert body["error"] == "unprocessable_entity"
     assert body["message"] == "The URL is missing"
+  end
+
+  test "create: returns a bad format when the url isn't valid" do
+    params = %{url: "1234567890qwertyuiop"}
+
+    conn =
+      :post
+      |> conn("/domains", Jason.encode!(params))
+      |> put_req_header("content-type", @mimetype)
+      |> Shorty.Router.call(@options)
+
+    assert conn.status == 422
+
+    assert {:ok, body} = Jason.decode(conn.resp_body)
+
+    assert body["error"] == "unprocessable_entity"
+    assert body["message"] == "The URL is not valid"
   end
 end

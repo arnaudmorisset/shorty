@@ -21,5 +21,21 @@ defmodule Shorty.Models.Domain do
     url
     |> cast(params, [:url, :short_tag])
     |> validate_required([:url, :short_tag])
+    |> validate_url(:url)
+  end
+
+  def validate_url(changeset, field, opts \\ []) do
+    validate_change(changeset, field, fn _, value ->
+      case URI.parse(value) do
+        %URI{scheme: nil} ->
+          [{field, Keyword.get(opts, :message, "is missing a scheme (e.g. https)")}]
+
+        %URI{host: nil} ->
+          [{field, Keyword.get(opts, :message, "is missing a host")}]
+
+        _ ->
+          []
+      end
+    end)
   end
 end

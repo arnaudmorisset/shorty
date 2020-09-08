@@ -11,7 +11,10 @@ defmodule Shorty.Controllers.Domain do
         })
 
       {:error, %Ecto.Changeset{errors: [url: {"can't be blank", [validation: :required]}]}} ->
-        respond(conn, 400, %{error: "invalid_request", message: "The URL is missing"})
+        respond(conn, 422, %{error: "unprocessable_entity", message: "The URL is missing"})
+
+      {:error, %Ecto.Changeset{errors: [url: {_, _}]}} ->
+        respond(conn, 422, %{error: "unprocessable_entity", message: "The URL is not valid"})
     end
   end
 
