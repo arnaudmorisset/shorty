@@ -11,3 +11,7 @@ config :shorty, ecto_repos: [Shorty.Repo]
 config :shorty, cowboy_port: 8080
 config :shorty, domain_name: "localhost"
 config :shorty, scheme: "http"
+
+if Mix.env() == :test do
+  config :logger, level: :warn
+end
