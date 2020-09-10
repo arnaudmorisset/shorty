@@ -21,6 +21,7 @@ defmodule Shorty.Models.Domain do
     url
     |> cast(params, [:url, :short_tag])
     |> validate_required([:url, :short_tag])
+    |> unique_constraint(:url)
     |> validate_url(:url)
   end
 
