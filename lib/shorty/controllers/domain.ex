@@ -2,7 +2,10 @@ defmodule Shorty.Controllers.Domain do
   import Shorty.Controller
 
   def create(conn, params) do
-    case create_domain(params) do
+    # TODO(arnaud): Isolate business logic inside a workflow with input validation.
+    original_url = params["url"] || ""
+
+    case find_or_create_domain(original_url) do
       {:ok, domain} ->
         respond(conn, 200, %{
           original_url: domain.url,
@@ -15,10 +18,15 @@ defmodule Shorty.Controllers.Domain do
     end
   end
 
-  defp create_domain(params) do
-    %{url: params["url"], short_tag: generate_short_tag()}
-    |> Shorty.Models.Domain.changeset_creation()
-    |> Shorty.Commands.Domain.create()
+  defp find_or_create_domain(original_url) do
+    with {:ok, domain} <- Shorty.Queries.Domain.by_original_url(original_url) do
+      {:ok, domain}
+    else
+      {:error, %Shorty.Repo.NotFoundError{}} ->
+        %{url: original_url, short_tag: generate_short_tag()}
+        |> Shorty.Models.Domain.changeset_creation()
+        |> Shorty.Commands.Domain.create()
+    end
   end
 
   defp generate_short_tag do

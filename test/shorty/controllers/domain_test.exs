@@ -8,8 +8,6 @@ defmodule Shorty.Controllers.DomainTest do
   test "create: returns a JSON payload describing the created domain" do
     params = %{url: "https://fake.domain.locale/1234567890qwertyuiop"}
 
-    domains_before = Shorty.Queries.Domain.by_original_url(params.url)
-
     conn =
       :post
       |> conn("/domains", Jason.encode!(params))
@@ -24,9 +22,7 @@ defmodule Shorty.Controllers.DomainTest do
     assert body["original_url"] == params.url
     assert body["shorten_url"] == "http://localhost:8080/#{body["short_tag"]}"
 
-    domains_after = Shorty.Queries.Domain.by_original_url(params.url)
-
-    assert length(domains_after) > length(domains_before)
+    assert {:ok, _} = Shorty.Queries.Domain.by_original_url(params.url)
   end
 
   test "create: returns a bad request error when the url is missing from the payload" do
