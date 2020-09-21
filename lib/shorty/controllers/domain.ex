@@ -54,6 +54,10 @@ defmodule Shorty.Controllers.Domain do
     domain_name = Application.get_env(:shorty, :domain_name, "localhost")
     cowboy_port = Application.get_env(:shorty, :cowboy_port, 4000)
 
-    "#{scheme}://#{domain_name}:#{cowboy_port}/#{short_tag}"
+    if Mix.env() != :prod do
+      "#{scheme}://#{domain_name}:#{cowboy_port}/#{short_tag}"
+    else
+      "#{scheme}://#{domain_name}/#{short_tag}"
+    end
   end
 end

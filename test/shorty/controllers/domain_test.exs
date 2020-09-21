@@ -21,7 +21,7 @@ defmodule Shorty.Controllers.DomainTest do
 
     assert body["short_tag"]
     assert body["original_url"] == params.url
-    assert body["shorten_url"] == "http://localhost:8080/#{body["short_tag"]}"
+    assert body["shorten_url"] == "http://localhost:4000/#{body["short_tag"]}"
 
     assert {:ok, _} = Shorty.Queries.Domain.by_original_url(params.url)
   end
@@ -46,7 +46,7 @@ defmodule Shorty.Controllers.DomainTest do
 
     assert body["original_url"] == domain.url
     assert body["short_tag"] == domain.short_tag
-    assert body["shorten_url"] == "http://localhost:8080/#{body["short_tag"]}"
+    assert body["shorten_url"] == "http://localhost:4000/#{body["short_tag"]}"
   end
 
   test "create: returns an unprocessable_entity when the url is missing from the payload" do
