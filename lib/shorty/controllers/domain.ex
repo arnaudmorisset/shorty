@@ -52,7 +52,7 @@ defmodule Shorty.Controllers.Domain do
   defp build_shorten_url(short_tag) do
     scheme = Application.get_env(:shorty, :scheme, "https")
     domain_name = Application.get_env(:shorty, :domain_name, "localhost")
-    cowboy_port = Application.get_env(:shorty, :cowboy_port, 8080)
+    cowboy_port = Application.get_env(:shorty, :cowboy_port, 4000)
 
     "#{scheme}://#{domain_name}:#{cowboy_port}/#{short_tag}"
   end
