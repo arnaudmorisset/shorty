@@ -80,4 +80,35 @@ defmodule Shorty.Controllers.DomainTest do
     assert body["error"] == "unprocessable_entity"
     assert body["message"] == "The URL is not valid"
   end
+
+  test "show: redirect the user when everything is fine" do
+    {:ok, domain} =
+      %{
+        url: "https://fake.domain.local/qwertyuiop1234567890asdfghjklzxcvbnm",
+        short_tag: "1234"
+      }
+      |> Shorty.Models.Domain.changeset_creation()
+      |> Shorty.Commands.Domain.create()
+
+    conn =
+      :get
+      |> conn("/#{domain.short_tag}", "")
+      |> Shorty.Router.call(@options)
+
+    assert conn.status == 301
+  end
+
+  test "show: returns 404 when the original URL cannot be found" do
+    conn =
+      :get
+      |> conn("/nonexistingtag", "")
+      |> Shorty.Router.call(@options)
+
+    assert conn.status == 404
+
+    assert {:ok, body} = Jason.decode(conn.resp_body)
+
+    assert body["error"] == "not_found"
+    assert body["message"] == "The original URL cannot be found"
+  end
 end
