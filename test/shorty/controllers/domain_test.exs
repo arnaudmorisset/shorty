@@ -49,7 +49,7 @@ defmodule Shorty.Controllers.DomainTest do
     assert body["shorten_url"] == "http://localhost:8080/#{body["short_tag"]}"
   end
 
-  test "create: returns a bad request error when the url is missing from the payload" do
+  test "create: returns an unprocessable_entity when the url is missing from the payload" do
     conn =
       :post
       |> conn("/domains", Jason.encode!(%{}))
@@ -64,7 +64,7 @@ defmodule Shorty.Controllers.DomainTest do
     assert body["message"] == "The URL is not valid"
   end
 
-  test "create: returns a bad format when the url isn't valid" do
+  test "create: returns an unprocessable_entity when the url isn't valid" do
     params = %{url: "1234567890qwertyuiop"}
 
     conn =
