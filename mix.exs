@@ -8,6 +8,7 @@ defmodule Shorty.MixProject do
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      aliases: aliases(),
       elixirc_paths: elixirc_paths(Mix.env())
     ]
   end
@@ -26,6 +27,10 @@ defmodule Shorty.MixProject do
       {:plug_cowboy, "~> 2.3"},
       {:jason, "~> 1.2"}
     ]
+  end
+
+  defp aliases do
+    ["ecto.setup": ["ecto.create", "ecto.migrate"], "ecto.reset": ["ecto.drop", "ecto.setup"]]
   end
 
   defp elixirc_paths(:test), do: ["lib", "test/support"]
