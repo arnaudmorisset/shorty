@@ -18,6 +18,19 @@ defmodule Shorty.Controllers.Domain do
     end
   end
 
+  def show(conn, params) do
+    # TODO(arnaud): Isolate business logic inside a workflow with input validation.
+    short_tag = params["short_tag"] || ""
+
+    case Shorty.Queries.Domain.by_short_tag(short_tag) do
+      {:ok, domain} ->
+        redirect(conn, domain.url)
+
+      {:error, %Shorty.Repo.NotFoundError{}} ->
+        respond(conn, 404, %{error: "not_found", message: "The original URL cannot be found"})
+    end
+  end
+
   defp find_or_create_domain(original_url) do
     with {:ok, domain} <- Shorty.Queries.Domain.by_original_url(original_url) do
       {:ok, domain}
