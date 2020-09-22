@@ -33,10 +33,12 @@ curl -XPOST "http://your.domain.name/domains" -d '{"url": "https://a.too.long.ur
 }
 ```
 
-The ideal usage is to create an alias using `cURL` and `jq` as follow:
+The ideal usage is to create a bash function using `cURL` and `jq` as follow:
 
 ```bash
-alias shorty=curl -XPOST "http://your.domain.name/domains" -d '{"url": "${$1}"}' -H "Content-type: application/json" | jq '.shorten_url'
+shorty() {
+  curl -XPOST "http://your.domain.name/domains" -d '{"url": "'"$1"'"}' -H "Content-type: application/json" | jq '.shorten_url'
+}
 ```
 
 ## Installation
@@ -56,8 +58,8 @@ After that, everything should be fine and you can reach the application at `http
 
 ## Deployment
 
-I use Gigalixir for this kind of project.
-They have a nice documentation.
+I use [Gigalixir](https://www.gigalixir.com/) for this kind of project.
+They have a [nice documentation](https://gigalixir.readthedocs.io/en/latest/).
 Feel free to use what you want. 🤷‍♂️
 
 ## License
