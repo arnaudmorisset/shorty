@@ -1,6 +1,6 @@
 # Shorty
 
-![Continuous Integration](https://github.com/arnaudmorisset/shorty/workflows/Continuous%20Integration/badge.svg?branch=master)
+![Test and Deploy](https://github.com/arnaudmorisset/shorty/workflows/Test%20and%20Deploy/badge.svg?branch=master&event=push)
 
 A dead-simple web API to shorten URL, built with Elixir.
 
