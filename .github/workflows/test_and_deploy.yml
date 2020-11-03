@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: Test and Deploy
 
 on:
   push:
@@ -7,9 +7,8 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
-    name: Build and test
+  test:
+    name: Test
     runs-on: ubuntu-latest
     
     services:
@@ -26,22 +25,45 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Set up Elixir
       uses: actions/setup-elixir@v1
       with:
         elixir-version: '1.10.3'
         otp-version: '22.3'
+    
     - name: Restore dependencies cache
       uses: actions/cache@v2
       with:
         path: deps
         key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
         restore-keys: ${{ runner.os }}-mix-
+    
     - name: Install dependencies
       run: mix deps.get
+    
     - name: Check Formatting
       run: mix format --check-formatted
+    
     - name: Run migrations
       run: MIX_ENV=test mix ecto.reset
+    
     - name: Run tests
       run: mix test
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/master'
+
+    runs-on: ubuntu-latest
+  
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: master
+          fetch-depth: 0
+
+      - run: sudo pip install gigalixir --ignore-installed six
+      - run: gigalixir login -e "${{ secrets.GIGALIXIR_EMAIL }}" -y -p "${{ secrets.GIGALIXIR_PASSWORD }}"
+      - run: gigalixir git:remote ${{ secrets.GIGALIXIR_APP_NAME }}
+      - run: git push -f gigalixir HEAD:refs/heads/master
