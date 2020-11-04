@@ -2,7 +2,6 @@ defmodule Shorty.Controllers.Domain do
   import Shorty.Controller
 
   def create(conn, params) do
-    # TODO(arnaud): Isolate business logic inside a workflow with input validation.
     original_url = params["url"] || ""
 
     case find_or_create_domain(original_url) do
@@ -21,7 +20,6 @@ defmodule Shorty.Controllers.Domain do
   end
 
   def show(conn, params) do
-    # TODO(arnaud): Isolate business logic inside a workflow with input validation.
     short_tag = params["short_tag"] || ""
 
     case Shorty.Queries.Domain.by_short_tag(short_tag) do
