@@ -61,7 +61,7 @@ defmodule Shorty.Controllers.DomainTest do
     assert {:ok, body} = Jason.decode(conn.resp_body)
 
     assert body["error"] == "unprocessable_entity"
-    assert body["message"] == "The URL is not valid"
+    assert body["details"]["url"] == "can't be blank"
   end
 
   test "create: returns an unprocessable_entity when the url isn't valid" do
@@ -78,7 +78,7 @@ defmodule Shorty.Controllers.DomainTest do
     assert {:ok, body} = Jason.decode(conn.resp_body)
 
     assert body["error"] == "unprocessable_entity"
-    assert body["message"] == "The URL is not valid"
+    assert body["details"]["url"] == "is missing a scheme (e.g. https)"
   end
 
   test "show: redirect the user when everything is fine" do

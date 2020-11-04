@@ -13,8 +13,10 @@ defmodule Shorty.Controllers.Domain do
           shorten_url: build_shorten_url(domain.short_tag)
         })
 
-      {:error, %Ecto.Changeset{errors: [url: {_, _}]}} ->
-        respond(conn, 422, %{error: "unprocessable_entity", message: "The URL is not valid"})
+      {:error, %Ecto.Changeset{errors: errors}} ->
+        error_details = format_changeset_errors(errors)
+
+        respond(conn, 422, %{error: "unprocessable_entity", details: error_details})
     end
   end
 
@@ -59,5 +61,11 @@ defmodule Shorty.Controllers.Domain do
     else
       "#{scheme}://#{domain_name}/#{short_tag}"
     end
+  end
+
+  defp format_changeset_errors(errors) do
+    errors
+    |> Enum.reduce([], fn {key, value}, acc -> acc ++ ["#{key}": elem(value, 0)] end)
+    |> Enum.into(%{})
   end
 end
