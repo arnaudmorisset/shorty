@@ -2,67 +2,59 @@
 
 ![Test and Deploy](https://github.com/arnaudmorisset/shorty/workflows/Test%20and%20Deploy/badge.svg?branch=master&event=push)
 
-A dead-simple web API to shorten URL, built with Elixir.
+---
 
-## Motivation
-
-> This project aims to be an educational repository.
-
-My main motivation was to show how we can build a web API in Elixir, without Phoenix.
-I'll probably continue to use this project as a sandbox to play with stuff like error monitoring, tracing and metrics.
-Maybe I will also create a series of blogpost to explain how to build this project step by step.
-
-## Tech/framework used
-
-- `ecto_sql` => as an ORM
-- `postgrex` => as a PostgreSQL driver
-- `plug_cowboy` => as a web server
-- `jason` => as a JSON encode/decoder
-
-## Usage
-
-Once your application is deployed in a production/staging environment, you can use it like that:
-
-```bash
-# Shorten a URL by calling the POST /domains endpoint
-curl -XPOST "http://your.domain.name/domains" -d '{"url": "https://a.too.long.url/1234qwerty4567uiopasdfghjklzxcvbnm"}' -H "Content-type: application/json"
-
-# Here's what a response looks like
-{
-  "original_url":"https://a.too.long.url/1234qwerty4567uiopasdfghjklzxcvbnm",
-  "short_tag":"HcO3mkfcdXaagQEI",
-  "shorten_url":"http://your.domain.name/HcO3mkfcdXaagQEI"
-}
-```
-
-The ideal usage is to create a bash function using `cURL` and `jq` as follow:
-
-```bash
-shorty() {
-  curl -XPOST "http://your.domain.name/domains" -d '{"url": "'"$1"'"}' -H "Content-type: application/json" | jq '.shorten_url'
-}
-```
+Shorty is a web API for shortening URLs.
 
 ## Installation
 
 ```bash
-# 1. Clone the repository
-git clone git@github.com:arnaudmorisset/shorty.git
+# 1. Clone the repository.
+git clone git@github.com:arnaudmorisset/shorty.git && cd shorty
 
-# 2. Start third-party services (only PostgreSQL for now)
-docker-compose up
+# 2. Fetch dependencies.
+mix deps.get
 
-# 3. Create database and run migrations
+# 3. Create database and run migrations.
+# ⚠️ PostgreSQL is required, if you are a Docker user, just use `docker-compose up`.
 mix ecto.setup
+
+# 4. Start the application
+iex -S mix
 ```
+
+> If you have Docker on your machine, you can start a PostgeSQL instance using `docker-compose up`.
 
 After that, everything should be fine and you can reach the application at `http://localhost:4000`.
 
-## Deployment
+## Usage
 
-I use [Gigalixir](https://www.gigalixir.com/) for this kind of project.
-They have a [nice documentation](https://gigalixir.readthedocs.io/en/latest/).
-Feel free to use what you want. 🤷‍♂️
+The endpoint `POST /domains` will allow you to shorten a URL.
+You will need to send this URL as a JSON params in request's body.
+
+```bash
+# You can try the following with your favorite HTTP client.
+curl -XPOST "http://localhost:4000/domains" -d '{"url": "https://a.too.long.url/1234qwerty4567uiopasdfghjklzxcvbnm"}' -H "Content-type: application/json"
+```
+
+This endpoint should respond with a JSON payload like the following:
+
+```json
+{
+  "original_url":"https://a.too.long.url/1234qwerty4567uiopasdfghjklzxcvbnm",
+  "short_tag":"HcO3mkfcdXaagQEI",
+  "shorten_url":"http://localhost:4000/HcO3mkfcdXaagQEI"
+}
+```
+
+As this endpoint send back JSON, you can easily parse it using a tool like [jq](https://stedolan.github.io/jq/).
+For example, I added the following function in my `.zshrc`:
+
+```bash
+shorty() {
+  curl -XPOST "http://localhost:4000/domains" -d '{"url": "'"$1"'"}' -H "Content-type: application/json" | jq '.shorten_url'
+}
+```
 
 ## License
 
