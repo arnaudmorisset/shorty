@@ -2,8 +2,6 @@
 
 ![Test and Deploy](https://github.com/arnaudmorisset/shorty/workflows/Test%20and%20Deploy/badge.svg?branch=master&event=push)
 
----
-
 Shorty is a web API for shortening URLs.
 
 ## Installation
@@ -22,8 +20,6 @@ mix ecto.setup
 # 4. Start the application
 iex -S mix
 ```
-
-> If you have Docker on your machine, you can start a PostgeSQL instance using `docker-compose up`.
 
 After that, everything should be fine and you can reach the application at `http://localhost:4000`.
 
